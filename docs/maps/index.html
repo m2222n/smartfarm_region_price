@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>농작물 최적 재배 지역 지도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }
+        .footer a {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 농작물 최적 재배 지역</h1>
+        <p class="subtitle">전국 2,072개 행정동 토양 데이터 기반</p>
+
+        <div class="card-grid">
+            <a href="사과.html" class="card">
+                <div class="card-icon">🍎</div>
+                <div class="card-title">사과</div>
+                <div class="card-desc">Top 30 최적 재배 지역</div>
+            </a>
+
+            <a href="감귤.html" class="card">
+                <div class="card-icon">🍊</div>
+                <div class="card-title">감귤</div>
+                <div class="card-desc">Top 30 최적 재배 지역</div>
+            </a>
+
+            <a href="배추.html" class="card">
+                <div class="card-icon">🥬</div>
+                <div class="card-title">배추</div>
+                <div class="card-desc">Top 30 최적 재배 지역</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>데이터 출처: 농촌진흥청 흙토람 |
+            <a href="https://github.com/your-username/smartfarm_region_price">GitHub</a></p>
+        </div>
+    </div>
+</body>
+</html>

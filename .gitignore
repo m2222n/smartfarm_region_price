@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large data files (GitHub 100MB 제한)
+data/geo/*.geojson
+outputs/maps/map.html
+docs/presentation.pdf
+
+# 토양 데이터 (큰 파일)
+data/processed/final_soil_*.csv
