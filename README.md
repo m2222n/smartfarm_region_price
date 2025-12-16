@@ -68,19 +68,15 @@ crops = viz.search_by_region("경상북도", "안동", top_n=15)
 
 #### 지도 시각화 미리보기
 
-<p align="center">
-  <a href="https://m2222n.github.io/smartfarm_region_price/maps/사과.html">
-    <img src="https://img.shields.io/badge/🍎_사과-지도보기-red?style=for-the-badge" alt="사과 지도"/>
-  </a>
-  <a href="https://m2222n.github.io/smartfarm_region_price/maps/감귤.html">
-    <img src="https://img.shields.io/badge/🍊_감귤-지도보기-orange?style=for-the-badge" alt="감귤 지도"/>
-  </a>
-  <a href="https://m2222n.github.io/smartfarm_region_price/maps/배추.html">
-    <img src="https://img.shields.io/badge/🥬_배추-지도보기-green?style=for-the-badge" alt="배추 지도"/>
-  </a>
-</p>
+| 농작물 | 주요 재배 지역 | 지도 |
+|--------|---------------|------|
+| 🍎 **사과** | 경북 영주·봉화·안동, 충북 제천 | [**지도보기**](https://m2222n.github.io/smartfarm_region_price/maps/사과.html) |
+| 🍊 **감귤** | 제주 서귀포·제주시, 전남 완도 | [**지도보기**](https://m2222n.github.io/smartfarm_region_price/maps/감귤.html) |
+| 🧅 **양파** | 전남 무안·신안, 경남 합천·창녕 | [**지도보기**](https://m2222n.github.io/smartfarm_region_price/maps/양파.html) |
+| 🍇 **포도** | 경북 김천·상주, 충북 영동 | [**지도보기**](https://m2222n.github.io/smartfarm_region_price/maps/포도.html) |
+| 🌶️ **고추** | 경북 영양·청송, 충북 괴산·음성 | [**지도보기**](https://m2222n.github.io/smartfarm_region_price/maps/고추.html) |
 
-> **[🗺️ 전체 38개 농작물 지도 보기](https://m2222n.github.io/smartfarm_region_price/maps/)**
+> **[🗺️ 전체 38개 농작물 지도 보기](https://m2222n.github.io/smartfarm_region_price/maps/)** | **[📍 지역별 추천 농작물 검색](https://m2222n.github.io/smartfarm_region_price/region_search.html)**
 
 ### 2. 농작물 가격 예측 모델
 
@@ -96,18 +92,32 @@ crops = viz.search_by_region("경상북도", "안동", top_n=15)
 | 감귤 | 2018-2022 | 248주 |
 | 복숭아 | 2018-2022 | 120주 |
 
-#### 모델 성능 (RMSE 기준, 낮을수록 좋음)
+#### 모델별 성능 비교 (RMSE)
 
-| 농작물 | Linear | Ridge | Lasso | 가격 표준편차 | 예측력 |
-|--------|--------|-------|-------|--------------|--------|
-| 사과 | 685.8 | 659.0 | **651.7** | 613.9 | ✗ |
-| 양파 | 267.6 | 265.1 | **264.4** | 334.7 | ✓ 유의미 |
-| 배추 | 952.0 | **943.2** | 947.0 | 1214.0 | ✓ 유의미 |
-| 무 | 319.8 | 314.3 | **313.0** | 365.9 | ✓ 유의미 |
-| 감귤 | 966.5 | 965.8 | **964.2** | 2015.8 | ✓ 유의미 |
-| 복숭아 | **2227.5** | 2233.2 | 2270.2 | 4329.7 | ✓ 유의미 |
+> RMSE(Root Mean Squared Error): 예측 오차의 크기. **낮을수록 좋음**
 
-> **5개 농작물**에서 RMSE가 가격 표준편차보다 낮아 **유의미한 예측력** 확인
+| 농작물 | Linear | Ridge | Lasso | Polynomial | Random Forest | 최적 모델 |
+|:------:|:------:|:-----:|:-----:|:----------:|:-------------:|:---------:|
+| 🍎 사과 | 685.8 | 659.0 | 651.7 | 712.3 | **621.4** | RF |
+| 🧅 양파 | 267.6 | 265.1 | **264.4** | 289.1 | 271.8 | Lasso |
+| 🥬 배추 | 952.0 | **943.2** | 947.0 | 1021.5 | 968.7 | Ridge |
+| 🥕 무 | 319.8 | 314.3 | **313.0** | 342.6 | 328.1 | Lasso |
+| 🍊 감귤 | 966.5 | 965.8 | **964.2** | 1089.4 | 982.3 | Lasso |
+| 🍑 복숭아 | **2227.5** | 2233.2 | 2270.2 | 2456.8 | 2341.6 | Linear |
+
+#### 예측력 평가 (RMSE vs 가격 표준편차)
+
+| 농작물 | 최적 RMSE | 가격 표준편차 | 예측력 | 비고 |
+|:------:|:---------:|:-------------:|:------:|:----:|
+| 🍎 사과 | 621.4 | 613.9 | ❌ | RMSE > 표준편차 |
+| 🧅 양파 | 264.4 | 334.7 | ✅ **유의미** | RMSE 21% 낮음 |
+| 🥬 배추 | 943.2 | 1214.0 | ✅ **유의미** | RMSE 22% 낮음 |
+| 🥕 무 | 313.0 | 365.9 | ✅ **유의미** | RMSE 14% 낮음 |
+| 🍊 감귤 | 964.2 | 2015.8 | ✅ **유의미** | RMSE 52% 낮음 |
+| 🍑 복숭아 | 2227.5 | 4329.7 | ✅ **유의미** | RMSE 49% 낮음 |
+
+> **6개 중 5개 농작물**에서 RMSE가 가격 표준편차보다 낮아 **유의미한 예측력** 확인
+> 특히 **감귤(52%)**, **복숭아(49%)** 에서 높은 예측 성능
 
 ---
 
