@@ -6,7 +6,7 @@
 [![Selenium](https://img.shields.io/badge/Selenium-4.8+-green.svg)](https://selenium.dev)
 [![Folium](https://img.shields.io/badge/Folium-0.14+-orange.svg)](https://python-visualization.github.io/folium/)
 
-> **🗺️ [인터랙티브 지도 보기](https://your-username.github.io/smartfarm_region_price/maps/)** - 사과, 감귤, 배추 최적 재배 지역
+> **🗺️ [인터랙티브 지도 보기](https://m2222n.github.io/smartfarm_region_price/maps/)** - 사과, 감귤, 배추 최적 재배 지역
 
 ## 프로젝트 개요
 
