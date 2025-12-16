@@ -338,13 +338,19 @@ class CropRegionVisualizer:
         """지도에 제목 추가"""
         title_html = f'''
             <div style="position: fixed;
-                        top: 10px; left: 50px;
+                        top: 15px; left: 60px;
                         z-index: 9999;
-                        background-color: white;
-                        padding: 10px;
-                        border-radius: 5px;
-                        box-shadow: 2px 2px 5px gray;">
-                <h4>{title}</h4>
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 15px 25px;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                        font-family: 'Malgun Gothic', -apple-system, sans-serif;">
+                <h3 style="margin: 0; color: white; font-size: 18px; letter-spacing: 0.5px;">
+                    🌾 {title}
+                </h3>
+                <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.8); font-size: 11px;">
+                    전국 토양 데이터 기반 | 농촌진흥청 흙토람
+                </p>
             </div>
         '''
         m.get_root().html.add_child(folium.Element(title_html))
@@ -388,59 +394,92 @@ class CropRegionVisualizer:
             elif idx == 3:
                 medal = "🥉"
 
+            # 순위별 배경색
+            row_bg = ""
+            if idx == 1:
+                row_bg = "background: linear-gradient(90deg, rgba(255,215,0,0.15) 0%, transparent 100%);"
+            elif idx == 2:
+                row_bg = "background: linear-gradient(90deg, rgba(192,192,192,0.15) 0%, transparent 100%);"
+            elif idx == 3:
+                row_bg = "background: linear-gradient(90deg, rgba(205,127,50,0.15) 0%, transparent 100%);"
+
             rows_html += f'''
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 4px 8px; text-align: center; font-weight: bold;">{medal}{idx}</td>
-                    <td style="padding: 4px 8px; font-size: 11px;">
-                        <div>{region_name}</div>
-                        <div style="font-size: 10px; color: #888;">{sido_name}</div>
+                <tr style="border-bottom: 1px solid #f0f0f0; {row_bg} transition: background 0.2s;"
+                    onmouseover="this.style.background='#f8f9fa'"
+                    onmouseout="this.style.background='{row_bg.split(':')[1].replace(';','') if row_bg else 'transparent'}'">
+                    <td style="padding: 12px 8px; text-align: center;">
+                        <span style="font-size: 16px;">{medal}</span>
+                        <span style="font-weight: 600; color: #2c3e50;">{idx}</span>
                     </td>
-                    <td style="padding: 4px 8px; width: 100px;">
-                        <div style="background: linear-gradient(90deg, #3498db {bar_width}%, #ecf0f1 {bar_width}%);
-                                    height: 16px; border-radius: 3px;"></div>
+                    <td style="padding: 12px 8px;">
+                        <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">{region_name}</div>
+                        <div style="font-size: 11px; color: #95a5a6; margin-top: 2px;">{sido_name}</div>
                     </td>
-                    <td style="padding: 4px 8px; text-align: right; font-size: 11px; font-weight: bold;">{best_val:.2f}</td>
+                    <td style="padding: 12px 8px; width: 90px;">
+                        <div style="background: #ecf0f1; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                                        width: {bar_width}%; height: 100%; border-radius: 4px;
+                                        transition: width 0.3s;"></div>
+                        </div>
+                    </td>
+                    <td style="padding: 12px 8px; text-align: right;">
+                        <span style="font-weight: 700; color: #667eea; font-size: 14px;">{best_val:.2f}</span>
+                    </td>
                 </tr>
             '''
 
         ranking_html = f'''
             <div id="ranking-panel" style="
                 position: fixed;
-                top: 60px; right: 10px;
+                top: 15px; right: 15px;
                 z-index: 9999;
-                background-color: white;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                max-height: 80vh;
-                overflow-y: auto;
-                width: 320px;
-                font-family: 'Malgun Gothic', sans-serif;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin: 0; color: #2c3e50;">📊 Top 15 순위</h4>
-                    <button onclick="document.getElementById('ranking-panel').style.display='none'"
-                            style="border: none; background: #eee; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">✕</button>
+                background: white;
+                padding: 0;
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+                max-height: 85vh;
+                overflow: hidden;
+                width: 340px;
+                font-family: 'Malgun Gothic', -apple-system, sans-serif;">
+
+                <!-- 헤더 -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            padding: 18px 20px; color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="margin: 0; font-size: 16px;">📊 Top 15 최적 재배 지역</h4>
+                        <button onclick="document.getElementById('ranking-panel').style.display='none'"
+                                style="border: none; background: rgba(255,255,255,0.2); color: white;
+                                       border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+                                       font-size: 14px; transition: background 0.2s;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                                onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                    </div>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; opacity: 0.9;">
+                        면적당 최적지 비율 기준 순위
+                    </p>
                 </div>
-                <p style="font-size: 11px; color: #7f8c8d; margin-bottom: 10px;">
-                    면적당 최적지 비율 기준
-                </p>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                    <thead>
-                        <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
-                            <th style="padding: 6px; text-align: center;">순위</th>
-                            <th style="padding: 6px; text-align: left;">지역</th>
-                            <th style="padding: 6px; text-align: center;">비율</th>
-                            <th style="padding: 6px; text-align: right;">점수</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {rows_html}
-                    </tbody>
-                </table>
-                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-                    <p style="font-size: 10px; color: #95a5a6; margin: 0;">
-                        📍 마커 클릭 시 상세 정보 확인<br>
-                        데이터: 농촌진흥청 흙토람
+
+                <!-- 순위 리스트 -->
+                <div style="max-height: calc(85vh - 120px); overflow-y: auto; padding: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #eee;">
+                                <th style="padding: 10px 8px; text-align: center; color: #7f8c8d; font-weight: 600;">순위</th>
+                                <th style="padding: 10px 8px; text-align: left; color: #7f8c8d; font-weight: 600;">지역</th>
+                                <th style="padding: 10px 8px; text-align: center; color: #7f8c8d; font-weight: 600;">비율</th>
+                                <th style="padding: 10px 8px; text-align: right; color: #7f8c8d; font-weight: 600;">점수</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows_html}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 푸터 -->
+                <div style="padding: 12px 20px; background: #f8f9fa; border-top: 1px solid #eee;">
+                    <p style="font-size: 11px; color: #95a5a6; margin: 0; text-align: center;">
+                        📍 지도의 마커를 클릭하면 상세 정보를 확인할 수 있습니다
                     </p>
                 </div>
             </div>
@@ -448,16 +487,108 @@ class CropRegionVisualizer:
         m.get_root().html.add_child(folium.Element(ranking_html))
 
     def _add_boundaries(self, m: folium.Map, data: gpd.GeoDataFrame) -> None:
-        """행정 경계 추가"""
-        folium.GeoJson(
-            data,
-            style_function=lambda x: {
-                "fillColor": "#3498db",
+        """행정 경계 추가 (그라데이션 효과)"""
+        best_col = SOIL_SCORE_COLUMNS["best"]
+
+        # 점수 기준 색상 매핑
+        if best_col in data.columns:
+            max_score = data[best_col].max()
+            min_score = data[best_col].min()
+        else:
+            max_score, min_score = 1, 0
+
+        def style_function(feature):
+            # 점수에 따른 색상 (높을수록 진한 보라색)
+            props = feature.get('properties', {})
+            score = props.get(best_col, 0) if props else 0
+
+            if max_score > min_score:
+                ratio = (score - min_score) / (max_score - min_score)
+            else:
+                ratio = 0.5
+
+            # 보라색 그라데이션 (#667eea ~ #764ba2)
+            r = int(102 + (118 - 102) * ratio)
+            g = int(126 + (75 - 126) * ratio)
+            b = int(234 + (162 - 234) * ratio)
+
+            return {
+                "fillColor": f"rgb({r},{g},{b})",
                 "color": "#2c3e50",
-                "weight": 1,
-                "fillOpacity": 0.4
+                "weight": 2,
+                "fillOpacity": 0.5 + ratio * 0.3,
+                "dashArray": "" if ratio > 0.7 else "5, 5"
             }
-        ).add_to(m)
+
+        def highlight_function(feature):
+            return {
+                "fillColor": "#f39c12",
+                "color": "#e74c3c",
+                "weight": 3,
+                "fillOpacity": 0.7
+            }
+
+        # 툴팁에 토양 성분 추가
+        def create_tooltip(row_data):
+            """각 지역별 커스텀 툴팁 생성"""
+            region = row_data.get("adm_nm", "알 수 없음")
+            sido = row_data.get("sidonm", "")
+            best = row_data.get(best_col, 0)
+            good = row_data.get(SOIL_SCORE_COLUMNS["good"], 0)
+
+            tooltip_html = f"""
+            <div style="font-family: 'Malgun Gothic', sans-serif; padding: 5px;">
+                <div style="font-weight: bold; font-size: 14px; color: #2c3e50; margin-bottom: 5px;">
+                    📍 {region}
+                </div>
+                <div style="color: #7f8c8d; font-size: 11px; margin-bottom: 8px;">{sido}</div>
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <div style="background: #e8f5e9; padding: 5px 10px; border-radius: 5px;">
+                        <span style="color: #2e7d32; font-size: 10px;">최적지</span>
+                        <div style="color: #1b5e20; font-weight: bold;">{best:.2f}</div>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 5px 10px; border-radius: 5px;">
+                        <span style="color: #1565c0; font-size: 10px;">적지</span>
+                        <div style="color: #0d47a1; font-weight: bold;">{good:.2f}</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #eee; padding-top: 8px;">
+                    <div style="color: #7f8c8d; font-size: 10px; margin-bottom: 5px;">🧪 토양 성분</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; font-size: 11px;">
+            """
+
+            for col in SOIL_COLUMNS:
+                val = row_data.get(col, None)
+                if val is not None and pd.notna(val):
+                    tooltip_html += f"""
+                        <div style="background: #f5f5f5; padding: 3px 6px; border-radius: 3px;">
+                            <span style="color: #9e9e9e;">{col}:</span>
+                            <span style="color: #2c3e50; font-weight: 600;">{val:.1f}</span>
+                        </div>
+                    """
+
+            tooltip_html += """
+                    </div>
+                </div>
+            </div>
+            """
+            return tooltip_html
+
+        # GeoJson에 커스텀 툴팁 적용
+        for idx, row in data.iterrows():
+            geojson = folium.GeoJson(
+                row.geometry.__geo_interface__,
+                style_function=lambda x, r=row: style_function({
+                    'properties': {best_col: r.get(best_col, 0)}
+                }),
+                highlight_function=highlight_function
+            )
+
+            # 커스텀 HTML 툴팁
+            tooltip_content = create_tooltip(row.to_dict())
+            tooltip = folium.Tooltip(tooltip_content)
+            geojson.add_child(tooltip)
+            geojson.add_to(m)
 
     def _add_markers(self, m: folium.Map, data: gpd.GeoDataFrame) -> None:
         """마커 클러스터 추가"""
@@ -475,34 +606,68 @@ class CropRegionVisualizer:
             ).add_to(marker_cluster)
 
     def _create_popup_html(self, row: pd.Series) -> str:
-        """마커 팝업 HTML 생성"""
+        """마커 팝업 HTML 생성 (예쁜 카드 스타일)"""
         region_name = row.get("adm_nm", row.get("법정동", "알 수 없음"))
+        sido_name = row.get("sidonm", "")
         crop_name = row.get(self.CROP_NAME_COL, "")
         best_score = row.get(SOIL_SCORE_COLUMNS["best"], 0)
         good_score = row.get(SOIL_SCORE_COLUMNS["good"], 0)
 
         html = f"""
-        <div style="font-family: 'Malgun Gothic', sans-serif;">
-            <h4 style="margin: 0; color: #2c3e50;">{region_name}</h4>
+        <div style="font-family: 'Malgun Gothic', -apple-system, sans-serif; min-width: 260px;">
+            <!-- 헤더 -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 15px; margin: -13px -20px 15px -20px; border-radius: 4px 4px 0 0;">
+                <h3 style="margin: 0; color: white; font-size: 16px;">{region_name}</h3>
+                <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.8); font-size: 12px;">{sido_name}</p>
+            </div>
         """
 
         if crop_name:
-            html += f"<p><strong>농작물:</strong> {crop_name}</p>"
+            html += f"""
+            <div style="background: #f8f9fa; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px;">
+                <span style="color: #7f8c8d; font-size: 11px;">농작물</span>
+                <div style="font-size: 18px; font-weight: bold; color: #2c3e50; margin-top: 2px;">🌱 {crop_name}</div>
+            </div>
+            """
 
         html += f"""
-            <p><strong>면적당 최적지:</strong> {best_score:.2f}</p>
-            <p><strong>면적당 적지:</strong> {good_score:.2f}</p>
-            <hr>
-            <p style="font-size: 12px; color: #7f8c8d;"><strong>토양 성분</strong></p>
+            <!-- 점수 카드 -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                            padding: 12px; border-radius: 10px; text-align: center;">
+                    <div style="color: rgba(255,255,255,0.9); font-size: 10px; margin-bottom: 4px;">면적당 최적지</div>
+                    <div style="color: white; font-size: 20px; font-weight: bold;">{best_score:.2f}</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            padding: 12px; border-radius: 10px; text-align: center;">
+                    <div style="color: rgba(255,255,255,0.9); font-size: 10px; margin-bottom: 4px;">면적당 적지</div>
+                    <div style="color: white; font-size: 20px; font-weight: bold;">{good_score:.2f}</div>
+                </div>
+            </div>
+
+            <!-- 토양 성분 -->
+            <div style="border-top: 1px solid #eee; padding-top: 12px;">
+                <p style="font-size: 12px; color: #7f8c8d; margin: 0 0 10px 0; font-weight: 600;">🧪 토양 성분</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
         """
 
         for col in SOIL_COLUMNS:
             if col in row.index:
                 value = row[col]
                 if pd.notna(value):
-                    html += f"<p style='margin: 2px 0; font-size: 11px;'>{col}: {value:.2f}</p>"
+                    html += f"""
+                    <div style="background: #f8f9fa; padding: 6px 10px; border-radius: 6px;">
+                        <span style="color: #95a5a6; font-size: 10px;">{col}</span>
+                        <div style="color: #2c3e50; font-weight: 600; font-size: 13px;">{value:.2f}</div>
+                    </div>
+                    """
 
-        html += "</div>"
+        html += """
+                </div>
+            </div>
+        </div>
+        """
         return html
 
     def save_map(

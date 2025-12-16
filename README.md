@@ -6,7 +6,8 @@
 [![Selenium](https://img.shields.io/badge/Selenium-4.8+-green.svg)](https://selenium.dev)
 [![Folium](https://img.shields.io/badge/Folium-0.14+-orange.svg)](https://python-visualization.github.io/folium/)
 
-> **🗺️ [인터랙티브 지도 보기](https://m2222n.github.io/smartfarm_region_price/maps/)** - 38개 농작물 최적 재배 지역 지도
+> **🗺️ [인터랙티브 지도 보기](https://m2222n.github.io/smartfarm_region_price/)** - 38개 농작물 최적 재배 지역 지도
+> **📍 [지역별 추천 농작물 검색](https://m2222n.github.io/smartfarm_region_price/region_search.html)** - 지역 입력 시 추천 농작물 확인
 
 ## 프로젝트 개요
 
@@ -59,8 +60,11 @@ regions = viz.search_by_crop("사과", top_n=30)
 crops = viz.search_by_region("경상북도", "안동", top_n=15)
 ```
 
-#### 토양 성분 정보
-- pH(산도), 유기물, 유효인산, 칼륨, 칼슘, 마그네슘, 전기전도도
+#### 지도 시각화 주요 기능
+- **그라데이션 경계**: 적합도에 따른 색상 강도 표시
+- **순위 패널**: Top 15 최적 지역 실시간 표시
+- **토양 성분 툴팁**: 마우스 오버 시 해당 지역 토양 성분 확인
+- **토양 성분**: pH(산도), 유기물, 유효인산, 칼륨, 칼슘, 마그네슘, 전기전도도
 
 #### 지도 시각화 미리보기
 
@@ -137,9 +141,11 @@ smartfarm_region_price/
 │   ├── 02_region_visualization.ipynb # 지도 시각화 데모
 │   └── 03_price_prediction.ipynb    # 가격 예측 분석
 ├── outputs/
-│   └── maps/
-│       └── map.html         # 인터랙티브 지도
-└── docs/
+│   └── maps/                # 로컬 생성 지도
+└── docs/                    # GitHub Pages 호스팅
+    ├── index.html           # 메인 페이지
+    ├── region_search.html   # 지역별 추천 농작물 검색
+    ├── maps/                # 38개 농작물 지도 (HTML)
     └── presentation.pdf     # 발표자료
 ```
 
