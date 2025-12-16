@@ -295,6 +295,7 @@ class CropRegionVisualizer:
         title: str = "농작물 재배 추천 지역",
         show_markers: bool = True,
         show_boundaries: bool = True,
+        show_ranking: bool = True,
         tiles: Optional[str] = None
     ) -> folium.Map:
         """
@@ -305,6 +306,7 @@ class CropRegionVisualizer:
             title: 지도 제목
             show_markers: 마커 클러스터 표시 여부
             show_boundaries: 행정 경계 표시 여부
+            show_ranking: 순위 차트 패널 표시 여부
             tiles: 지도 타일 스타일
 
         Returns:
@@ -327,6 +329,9 @@ class CropRegionVisualizer:
         if show_markers and "geometry" in data.columns:
             self._add_markers(m, data)
 
+        if show_ranking:
+            self._add_ranking_panel(m, data, title)
+
         return m
 
     def _add_title(self, m: folium.Map, title: str) -> None:
@@ -343,6 +348,104 @@ class CropRegionVisualizer:
             </div>
         '''
         m.get_root().html.add_child(folium.Element(title_html))
+
+    def _add_ranking_panel(
+        self,
+        m: folium.Map,
+        data: gpd.GeoDataFrame,
+        title: str
+    ) -> None:
+        """지도에 순위 차트 패널 추가"""
+        best_col = SOIL_SCORE_COLUMNS["best"]
+        good_col = SOIL_SCORE_COLUMNS["good"]
+
+        # 순위 데이터 준비 (최대 15개)
+        ranking_data = data.head(15).copy()
+
+        # 순위 테이블 HTML 생성
+        rows_html = ""
+        for idx, row in enumerate(ranking_data.itertuples(), 1):
+            region = getattr(row, "adm_nm", "알 수 없음")
+            sido = getattr(row, "sidonm", "")
+            best = getattr(row, best_col.replace(" ", "_").replace("당", "당"), 0) if hasattr(row, best_col.replace(" ", "_")) else row._asdict().get(best_col, 0)
+            good = getattr(row, good_col.replace(" ", "_").replace("당", "당"), 0) if hasattr(row, good_col.replace(" ", "_")) else row._asdict().get(good_col, 0)
+
+            # DataFrame에서 직접 값 가져오기
+            best_val = ranking_data.iloc[idx-1].get(best_col, 0)
+            good_val = ranking_data.iloc[idx-1].get(good_col, 0)
+            region_name = ranking_data.iloc[idx-1].get("adm_nm", "알 수 없음")
+            sido_name = ranking_data.iloc[idx-1].get("sidonm", "")
+
+            # 막대 그래프 너비 계산 (최대값 기준 비율)
+            max_score = ranking_data[best_col].max() if best_col in ranking_data.columns else 1
+            bar_width = (best_val / max_score * 100) if max_score > 0 else 0
+
+            medal = ""
+            if idx == 1:
+                medal = "🥇"
+            elif idx == 2:
+                medal = "🥈"
+            elif idx == 3:
+                medal = "🥉"
+
+            rows_html += f'''
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 4px 8px; text-align: center; font-weight: bold;">{medal}{idx}</td>
+                    <td style="padding: 4px 8px; font-size: 11px;">
+                        <div>{region_name}</div>
+                        <div style="font-size: 10px; color: #888;">{sido_name}</div>
+                    </td>
+                    <td style="padding: 4px 8px; width: 100px;">
+                        <div style="background: linear-gradient(90deg, #3498db {bar_width}%, #ecf0f1 {bar_width}%);
+                                    height: 16px; border-radius: 3px;"></div>
+                    </td>
+                    <td style="padding: 4px 8px; text-align: right; font-size: 11px; font-weight: bold;">{best_val:.2f}</td>
+                </tr>
+            '''
+
+        ranking_html = f'''
+            <div id="ranking-panel" style="
+                position: fixed;
+                top: 60px; right: 10px;
+                z-index: 9999;
+                background-color: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                max-height: 80vh;
+                overflow-y: auto;
+                width: 320px;
+                font-family: 'Malgun Gothic', sans-serif;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0; color: #2c3e50;">📊 Top 15 순위</h4>
+                    <button onclick="document.getElementById('ranking-panel').style.display='none'"
+                            style="border: none; background: #eee; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">✕</button>
+                </div>
+                <p style="font-size: 11px; color: #7f8c8d; margin-bottom: 10px;">
+                    면적당 최적지 비율 기준
+                </p>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                        <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
+                            <th style="padding: 6px; text-align: center;">순위</th>
+                            <th style="padding: 6px; text-align: left;">지역</th>
+                            <th style="padding: 6px; text-align: center;">비율</th>
+                            <th style="padding: 6px; text-align: right;">점수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows_html}
+                    </tbody>
+                </table>
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                    <p style="font-size: 10px; color: #95a5a6; margin: 0;">
+                        📍 마커 클릭 시 상세 정보 확인<br>
+                        데이터: 농촌진흥청 흙토람
+                    </p>
+                </div>
+            </div>
+        '''
+        m.get_root().html.add_child(folium.Element(ranking_html))
 
     def _add_boundaries(self, m: folium.Map, data: gpd.GeoDataFrame) -> None:
         """행정 경계 추가"""
